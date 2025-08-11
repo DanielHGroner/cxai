@@ -20,6 +20,7 @@ def serve_test_page():
 
 @app.route("/aihelp", methods=["POST"])
 def ai_help():
+    print('Entering ai_help() ***', flush=True)
     try:
         data = request.json
         source = data.get("source", "")
@@ -30,7 +31,7 @@ def ai_help():
 
         result = cx_gen_help.cx_gen_help(source, options)
 
-        print('ai_help(): Call to cx_gen_help() OK; Returing results')
+        print('ai_help(): Call to cx_gen_help() OK; Returing results', flush=True)
 
         return jsonify({
             "metadata": {
