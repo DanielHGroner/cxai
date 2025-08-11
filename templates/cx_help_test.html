@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test AI Help Endpoint</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; }
+        textarea { width: 100%; height: 200px; font-family: monospace; }
+        pre { background: #f0f0f0; padding: 1em; white-space: pre-wrap; }
+
+    </style>
+</head>
+<body>
+    <h2>Test /aihelp</h2>
+    <label>Source Code:</label><br>
+    <textarea id="source" placeholder="Enter Python code..."></textarea><br><br>
+
+    <!-- Button + Toggle Row -->
+    <div class="button-row inline-row">
+        <button onclick="callApi()">Get AI Help</button>
+
+        <label><input type="checkbox" id="showSettings" onchange="toggleSettings()"> Show Help Settings</label>
+
+    </div>
+
+    <!-- Hidden Settings Row -->
+    <div id="ai-settings" class="inline-row" style="margin-top:0.5em">
+        <label>Provider: 
+            <select id="provider" style="margin-right: 1.5em;">
+                <option value="dummy">dummy</option>
+                <option value="gemini">gemini</option>
+            </select>
+        </label>
+
+        <label>Model:&nbsp;</label><input type="text" id="modelName" value="gemini-2.5-flash-lite" style="margin-right: 1.5em;">
+        <label>Language:&nbsp;</label><input type="text" id="language" value="english" style="margin-right: 1.5em;">
+        <input type="checkbox" id="includeLong" checked><label style="margin-right: 1.5em;">Long&nbsp;Help</label>
+        <input type="checkbox" id="dryrun" checked><label style="margin-right: 1.5em;">Dry&nbsp;Run</label>
+        <label for="aihelp-apikeyInput">Gemini API Key:</label>
+        <input type="text" id="aihelp-apikeyInput" placeholder="Enter Gemini API Key" style="width: 300px;" />
+        <button onclick="saveGeminiKey()">💾 Save Key</button>
+    </div>
+
+    <h3>Response:</h3>
+    <pre id="response"></pre>
+
+    <h3>Parsed Help (allhelp):</h3>
+    <pre id="parsed"></pre>
+
+    <script src="/static/js/cxaihelp.js"></script>
+    <script src="/static/js/cxaihelpkey.js"></script>
+    <!--script src="{{ url_for('static', filename='js/cxaihelp.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cxaihelpkey.js') }}"></script-->
+
+    <script>
+    async function callApi() {
+        const sourceCode = document.getElementById('source').value;
+
+        const options = {
+            apiProvider: document.getElementById('provider')?.value || "gemini",
+            modelName: document.getElementById('modelName')?.value || "gemini-2.5-flash-lite",
+            includeLong: document.getElementById('includeLong')?.checked ?? true,
+            spokenLanguage: document.getElementById('language')?.value || "english",
+            dryrun: document.getElementById('dryrun')?.checked ?? true,
+            apikey: document.getElementById('aihelp-apikeyInput')?.value || ""
+        };
+        console.log("Submitting to /aihelp with options:", options);
+
+        try {
+            document.querySelector("button").disabled = true;
+            const result = await requestAiHelp(sourceCode, options);
+            document.querySelector("button").disabled = false;
+            console.log("returned from requestAiHelp; result=", result);
+
+            // Raw response
+            document.getElementById("response").textContent = JSON.stringify(result, null, 2);
+
+            // Parsed help (into allhelp format)
+            const allhelp = convertAiHelpDataToAllHelp(result.data, options.includeLong);
+            document.getElementById("parsed").textContent = JSON.stringify(allhelp, null, 2);
+
+        } catch (err) {
+            document.querySelector("button").disabled = false;
+            document.getElementById("response").textContent = "❌ Error: " + err.message;
+            document.getElementById("parsed").textContent = "";
+        }
+    }
+
+    function toggleSettings() {
+        const show = document.getElementById("showSettings").checked;
+        document.getElementById("ai-settings").style.display = show ? "flex" : "none";
+    }
+
+    window.onload = () => {
+        toggleSettings();  // Will hide or show based on checkbox default
+    };
+
+    </script>
+
+</body>
+</html>
