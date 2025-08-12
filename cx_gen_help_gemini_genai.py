@@ -1,4 +1,5 @@
 import os
+import logging
 from cx_gen_help_utils import load_prompt_template, str_to_list, apply_prompt_substitutions, parse_ai_help_text
 
 import warnings
@@ -14,6 +15,8 @@ try:
     from google import genai
 except ImportError:
     genai = None
+
+logger = logging.getLogger(__name__)
 
 def generate_help_gemini(source, options):
     if not genai:
@@ -51,20 +54,28 @@ def generate_help_gemini(source, options):
     #print(options)
     #print('OPTIONS end:')
     if options and options.get("dryrun", True):
-        print("----- BEGIN PROMPT -----\n")
-        print(prompt)
-        print("\n----- END PROMPT -----")
+        #print("----- BEGIN PROMPT -----\n")
+        #print(prompt)
+        #print("\n----- END PROMPT -----")
+        logging.info("generate_help_gemini(): ----- BEGIN PROMPT -----\n")
+        logging.info(prompt)
+        logging.info("\ngenerate_help_gemini(): ----- END PROMPT -----")
+
         return {}
 
-    print('creating genai.Client')
+    #print('creating genai.Client')
+    logging.info('generate_help_gemini(): creating genai.Client')
     # New SDK client
     client = genai.Client(api_key=apikey)
 
-    print('calling models.generate_content()')
+    #print('calling models.generate_content()')
+    logging.info('generate_help_gemini(): calling models.generate_content()')
     response = client.models.generate_content(model=model_name, contents=prompt, config={"temperature": temperature})
 
-    print('getting response part')
+    #print('getting response part')
+    logging.info('generate_help_gemini(): getting response part')
     text = response.text.strip()
 
-    print('returning result')
+    #print('returning result')
+    logging.info('generate_help_gemini(): returning result')
     return parse_ai_help_text(text)

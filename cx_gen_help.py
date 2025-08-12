@@ -1,4 +1,5 @@
 import argparse
+import logging
 from dotenv import load_dotenv
 from cx_gen_help_utils import str_to_list, parse_ai_help_text
 from cx_gen_help_gemini_genai import generate_help_gemini
@@ -19,6 +20,8 @@ DEFAULTS = {
     }
 }
 
+logger = logging.getLogger(__name__)
+
 # --- Providers ---
 def generate_help_dummy(source, options):
     include_long = options.get("includeLong", True)
@@ -37,14 +40,17 @@ def generate_help_dummy(source, options):
 # --- Main Dispatcher ---
 def cx_gen_help(source: str, options: dict) -> dict:
     provider = options.get("apiProvider", "gemini").lower()
-    print("🔍 Using provider:", provider)
-    print("📄 promptFile in DEFAULTS:", DEFAULTS.get(provider, {}).get("promptFile"))
+    #print("🔍 Using provider: ", provider)
+    logger.info("🔍 Using provider: %s", provider)
+    #print("📄 promptFile in DEFAULTS:", DEFAULTS.get(provider, {}).get("promptFile"))
+    logger.info("📄 promptFile in DEFAULTS: %s", DEFAULTS.get(provider, {}).get("promptFile"))
 
     merged_opts = {
        **DEFAULTS.get(provider, {}),
        **{k: v for k, v in options.items() if v is not None}
     }
-    print("📦 Merged options:", merged_opts)
+    #print("📦 Merged options:", merged_opts)
+    logger.info("📦 Merged options: %s", merged_opts)
 
     if provider == "dummy":
         return generate_help_dummy(source, merged_opts)
