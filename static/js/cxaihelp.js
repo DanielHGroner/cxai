@@ -6,7 +6,7 @@
  * @param {Object} options - Options for the AI engine
  * @returns {Promise<Object>} - Resolved with help data (parsed)
  */
-async function requestAiHelp(sourceCode, options = {}, baseUrl = "http://localhost:5001/aihelp") {
+async function requestAiHelp(sourceCode, options = {}, baseUrl = "/aihelp") {
     const payload = {
         source: sourceCode,
         options: {
