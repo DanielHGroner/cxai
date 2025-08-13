@@ -39,6 +39,7 @@ MANIFEST
 
 # Logs
 *.log
+logs/
 
 # Unit test / coverage reports
 htmlcov/
