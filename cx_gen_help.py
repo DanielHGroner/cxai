@@ -8,7 +8,7 @@ from cx_gen_help_gemini_genai import generate_help_gemini
 # --- Defaults and Configuration ---
 DEFAULTS = {
     "gemini": {
-        "modelName": "gemini-2.5-flash-lite",
+        "modelName": "gemini-3.1-flash-lite",
         "temperature": 0.3,
         "includeLong": True,
         "spokenLanguage": "english",
