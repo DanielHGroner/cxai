@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 from dotenv import load_dotenv
 from cx_gen_help_utils import str_to_list, parse_ai_help_text
 from cx_gen_help_gemini_genai import generate_help_gemini
@@ -8,8 +9,8 @@ from cx_gen_help_gemini_genai import generate_help_gemini
 # --- Defaults and Configuration ---
 DEFAULTS = {
     "gemini": {
-        "modelName": "gemini-3.1-flash-lite",
-        "temperature": 0.3,
+        "modelName": os.environ.get('GEMINI_MODEL_NAME', "gemini-3.1-flash-lite"),
+        "temperature": 0.1,
         "includeLong": True,
         "spokenLanguage": "english",
         "promptFile": "prompts/gemini-short-long.txt"

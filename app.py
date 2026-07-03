@@ -1,7 +1,8 @@
 import os
+import sys
 import traceback
 import logging
-from logging.handlers import RotatingFileHandler
+#from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_cors import CORS
@@ -15,23 +16,31 @@ log_level = os.environ.get('LOG_LEVEL', 'INFO').upper()
 log_level_num = getattr(logging, log_level, logging.INFO)
 logger = logging.getLogger()
 logger.setLevel(log_level_num)
-if os.environ.get('FLASK_ENV') == 'development':
-    console_handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
-else:
-    #log_file_path = os.path.join(os.path.expanduser('~'), 'cxai_app.log')
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    log_dir = os.path.join(base_dir, 'logs')
-    os.makedirs(log_dir, exist_ok=True)
-    log_file_path = os.path.join(log_dir, 'cxai_app.log')
 
-    file_handler = RotatingFileHandler(log_file_path, maxBytes=1024 * 1024, backupCount=3)
-    #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s')
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+# new to consistently log to stderr
+console_handler = logging.StreamHandler(sys.stderr)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# this is old logging code, thaat is being replaced for Render migration
+#if os.environ.get('FLASK_ENV') == 'development':
+#    console_handler = logging.StreamHandler()
+#    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#    console_handler.setFormatter(formatter)
+#    logger.addHandler(console_handler)
+#else:
+#    #log_file_path = os.path.join(os.path.expanduser('~'), 'cxai_app.log')
+#    base_dir = os.path.dirname(os.path.abspath(__file__))
+#    log_dir = os.path.join(base_dir, 'logs')
+#    os.makedirs(log_dir, exist_ok=True)
+#    log_file_path = os.path.join(log_dir, 'cxai_app.log')
+
+#   file_handler = RotatingFileHandler(log_file_path, maxBytes=1024 * 1024, backupCount=3)
+#    #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s')
+#    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#    file_handler.setFormatter(formatter)
+#    logger.addHandler(file_handler)
 
 #logging.basicConfig(level=log_level_num, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 #app.logger.setLevel(log_level_num)
